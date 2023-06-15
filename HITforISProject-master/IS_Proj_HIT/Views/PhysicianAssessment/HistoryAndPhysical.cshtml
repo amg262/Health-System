@@ -1,0 +1,322 @@
+﻿@using IS_Proj_HIT.Entities.Enum
+@using System.Linq
+@model IS_Proj_HIT.ViewModels.PhysicianAssessmentViewModel;
+
+
+<partial name="PatientBannerPartial" model="Model.Patient" class="mw-100"/>
+<partial name="_EncounterMenu" model="Model.Encounter"/>
+<form method="post" asp-action="SavePhysicianAssessment">
+@*Hidden inputs to pass additional data through when submitting form*@
+@Html.HiddenFor(x => x.EncounterId)
+@Html.HiddenFor(x => x.PhysicianAssessmentId)
+@Html.HiddenFor(x => x.ReferringProviderId)
+
+<div class="card">
+<div class="card-header bg-primary text-white">
+    <div class="row justify-content-between">
+        <div class="col-4">
+            <h4>History & Physical</h4>
+        </div>
+        <div class="col-4">
+            <div class="form-group form-inline my-auto">
+                <label asp-for="@Model.PhysicianAssessmentDate" class="mr-1">Date</label>
+                <input class="form-control ml-1" type="date" value='@DateTime.Today.ToString("MM/dd/yyyy")' asp-for="@Model.PhysicianAssessmentDate"/>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card-body bg-light">
+<div class="accordion">
+<div class="card">
+    <div class="card-header" id="presentIllnessHeader">
+        <h5>
+            <button class="btn btn-block text-left d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#presentIllness">Present Illness <i class="fas fa-chevron-right fa-lg align-self-center"></i></button>
+        </h5>
+    </div>
+    <div id="presentIllness" class="collapse">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.ChiefComplaint)
+                        @Html.TextAreaFor(x => x.ChiefComplaint, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.HistoryOfPresentIllness)
+                        @Html.TextAreaFor(x => x.HistoryOfPresentIllness, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header" id="allergiesAndMedicationsHeader">
+        <h5>
+            <button class="btn btn-block text-left d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#allergiesAndMedications">Allergies & Medications <i class="fas fa-chevron-right fa-lg align-self-center"></i></button>
+        </h5>
+    </div>
+    <div class="collapse" id="allergiesAndMedications">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.PhysicianAssessmentAllergies)
+                        <select class="selectpicker" data-container="body" asp-for="PhysicianAssessmentAllergies" multiple>
+                            @foreach (var allergy in @Model.PossibleAllergies)
+                            {
+                                <option value="@allergy.AllergenId" data-token="@allergy.AllergenName.ToLower()">@allergy.AllergenName</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        @*TODO: Add search input to add PhysicianAssessmentMedications. There's a couple of ways to do this, but my initial plan was to send a debounced ajax request on key-up, after about 800ms or so and return a jQuery data table where the user can select medications and add them to the list. There's about 13,000 medications, so putting them in a dropdown like the allergies isn't really a viable option*@
+                        @*@Html.TextBoxFor(x => x.PhysicianAssessmentMedications)*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header" id="socialAndFamilyHistoryHeader">
+        <h5>
+            <button class="btn btn-block text-left d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#socialAndFamilyHistory">Social & Family History <i class="fas fa-chevron-right fa-lg align-self-center"></i></button>
+        </h5>
+    </div>
+    <div id="socialAndFamilyHistory" class="collapse">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.SocialHistory)
+                        @Html.TextAreaFor(x => x.SocialHistory, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.FamilyHistory)
+                        @Html.TextAreaFor(x => x.FamilyHistory, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header" id="reviewOfSystemsHeader">
+        <h5>
+            <button class="btn btn-block text-left d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#reviewOfSystems">Review of Systems <i class="fas fa-chevron-right fa-lg align-self-center"></i></button>
+        </h5>
+    </div>
+    <div id="reviewOfSystems" class="collapse">
+        <div class="card-body">
+            @foreach (var system in Model.ReviewOfSystemsBodySystemTypes)
+            {
+                <div class="card">
+                    <div class="card-header">@system.Name</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="btn-group btn-group-toggle review-of-systems-btn-group" data-toggle="buttons">
+                                    <label class="btn btn-outline-primary @(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is null ? "active" : "")">
+                                        @Html.RadioButtonFor(x => x.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits, "", new
+                                        {
+                                            @autocomplete = "off",
+                                            @checked = Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is null ? "checked" : null
+                                        })
+                                        @*<input
+                                            type="radio"
+                                            name="ReviewOfSystem-@system.BodySystemTypeId"
+                                            id="ReviewOfSystem-@system.BodySystemTypeId-NotAssessed"
+                                            autocomplete="off"
+                                            asp-for="BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits"
+                                            value=""
+                                            checked="@(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is null ? "checked" : null)">*@
+                                        Not Assessed
+                                    </label>
+                                    <label class="btn btn-outline-primary @(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is true ? "active" : "")">
+                                        @Html.RadioButtonFor(x => x.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits, true, new
+                                        {
+                                            @autocomplete = "off",
+                                            @checked = Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is true ? "checked" : null
+                                        })
+                                        @*<input
+                                            type="radio"
+                                            name="ReviewOfSystem-@system.BodySystemTypeId"
+                                            id="ReviewOfSystem-@system.BodySystemTypeId-WithinNormalLimits"
+                                            autocomplete="off"
+                                            asp-for="BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits"
+                                            value="true"
+                                            checked="@(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is true ? "checked" : null)">*@
+                                        Within Normal Limits
+                                    </label>
+                                    <label class="btn btn-outline-primary @(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is false ? "active" : "")">
+                                        @Html.RadioButtonFor(x => x.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits, false, new
+                                        {
+                                            @autocomplete = "off",
+                                            @checked = Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is false ? "checked" : null
+                                        })
+                                        @*<input
+                                            type="radio"
+                                            name="ReviewOfSystem-@system.BodySystemTypeId"
+                                            id="ReviewOfSystem-@system.BodySystemTypeId-Abnormal"
+                                            autocomplete="off"
+                                            asp-for="BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits"
+                                            value="false"
+                                            checked="@(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is false ? "checked" : null)">*@
+                                        Abnormal
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-6" id="ReviewOfSystem-@system.BodySystemTypeId-Comment">
+                                @Html.LabelFor(x => x.BodySystemAssessments[system.BodySystemTypeId].Comment)
+                                @Html.TextAreaFor(x => x.BodySystemAssessments[system.BodySystemTypeId].Comment, new { @rows = 2, @cols = 50 })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header" id="physicalExamHeader">
+        <h5>
+            <button class="btn btn-block text-left d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#physicalExam">Physical Exam <i class="fas fa-chevron-right fa-lg align-self-center"></i></button>
+        </h5>
+    </div>
+    <div id="physicalExam" class="collapse">
+        <div class="card-body">
+            @foreach (var system in Model.PhysicalExamBodySystemTypes)
+            {
+                <div class="card">
+                    <div class="card-header">@system.Name</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="btn-group btn-group-toggle review-of-systems-btn-group" data-toggle="buttons">
+                                    <label class="btn btn-outline-primary @(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is null ? "active" : "")">
+                                        <input
+                                            type="radio"
+                                            name="ReviewOfSystem-@system.BodySystemTypeId"
+                                            id="ReviewOfSystem-@system.BodySystemTypeId-NotAssessed"
+                                            autocomplete="off"
+                                            asp-for="BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits"
+                                            value=""
+                                            checked="@(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is null ? "checked" : null)">
+                                        Not Assessed
+                                    </label>
+                                    <label class="btn btn-outline-primary @(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is true ? "active" : "")">
+                                        <input
+                                            type="radio"
+                                            name="ReviewOfSystem-@system.BodySystemTypeId"
+                                            id="ReviewOfSystem-@system.BodySystemTypeId-WithinNormalLimits"
+                                            autocomplete="off"
+                                            asp-for="BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits"
+                                            value="true"
+                                            checked="@(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is true ? "checked" : null)">
+                                        Within Normal Limits
+                                    </label>
+                                    <label class="btn btn-outline-primary @(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is false ? "active" : "")">
+                                        <input
+                                            type="radio"
+                                            name="ReviewOfSystem-@system.BodySystemTypeId"
+                                            id="ReviewOfSystem-@system.BodySystemTypeId-Abnormal"
+                                            autocomplete="off"
+                                            asp-for="BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits"
+                                            value="false"
+                                            checked="@(Model.BodySystemAssessments[system.BodySystemTypeId].IsWithinNormalLimits is false ? "checked" : null)">
+                                        Abnormal
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-6" id="ReviewOfSystem-@system.BodySystemTypeId-Comment">
+                                @Html.LabelFor(x => x.BodySystemAssessments[system.BodySystemTypeId].Comment)
+                                @Html.TextAreaFor(x => x.BodySystemAssessments[system.BodySystemTypeId].Comment, new { @rows = 2, @cols = 50 })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header" id="diagnosticsAndPlanHeader">
+        <h5>
+            <button class="btn btn-block text-left d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#diagnosticsAndPlan">Diagnostics & Plan <i class="fas fa-chevron-right fa-lg align-self-center"></i></button>
+        </h5>
+    </div>
+    <div id="diagnosticsAndPlan" class="collapse">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.SignificantDiagnosticTests)
+                        @Html.TextAreaFor(x => x.SignificantDiagnosticTests, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Assessment)
+                        @Html.TextAreaFor(x => x.Assessment, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        @Html.LabelFor(x => x.Plan)
+                        @Html.TextAreaFor(x => x.Plan, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="row m-3">
+    <div id="provider-dropdown" class="col-5">
+        @Html.LabelFor(x => x.AuthoringProviderID)
+        <select class="selectpicker" data-style="btn-secondary" title="Select a provider" asp-for="AuthoringProviderID">
+            @foreach (var provider in @Model.Providers)
+            {
+                <option value="@provider.PhysicianId" data-cosigner=@provider.ProviderType.CosignRequired>@provider.FirstName @provider.LastName</option>
+            }
+        </select>
+    </div>
+    <div class="col-5">
+        <div id="cosigner-dropdown">
+            @Html.LabelFor(x => x.CoSignatureProviderId)
+            <select class="selectpicker" data-style="btn-secondary" title="Select a provider" asp-for="CoSignatureProviderId">
+                @foreach (var physician in @Model.Physicians)
+                {
+                    <option value="@physician.PhysicianId">@physician.FirstName @physician.LastName</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="col-2">
+        @*Disabled for now until form is production ready*@
+        <button class="btn btn-primary" type="submit" disabled="disabled">Submit</button>
+    </div>
+</div>
+</div>
+</div>
+</form>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+    <script src="~/js/physicianAssessment.js"></script>
+}

@@ -1,0 +1,39 @@
+@model IS_Proj_HIT.ViewModels.UsersPlusViewModel
+@{
+    ViewData["Title"] = "Edit User";
+}
+<h1>
+    <a asp-action="ListUsers" class="btn btn-primary">
+        <i class="fa fa-arrow-left "></i>
+    </a>
+    Edit User
+</h1>
+
+Editing User: @Model.Email
+
+<form method="post" asp-action="EditUserDetails" name="editUserDetails">
+    <div class="container text-danger" asp-validation-summary="All"></div>
+    <input type="hidden" asp-for="@Model.UserId" />
+    <input type="hidden" asp-for="@Model.AspNetUsersId" />
+    <input type="hidden" asp-for="@Model.Email" />
+    <div class="row">
+        <div class="col-sm-4">
+            <label for="FirstName">First Name: </label><br />
+            <input class="form-control" asp-for="@Model.FirstName" name="FirstName" id="FirstName" placeholder="First Name" />
+        </div>
+        <div class="col-sm-4">
+            <label for="LastName">Last Name: </label><br />
+            <input class="form-control" asp-for="@Model.LastName" name="LastName" id="LastName" placeholder="Last Name" />
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-4">
+            <label for="Program">Program Enrolled In:</label><br />
+            <select class="form-control" id="Program" asp-for="@Model.ProgramId" asp-items="ViewBag.ProgramList">
+            </select>
+        </div>
+    </div>
+    <br />
+    <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
+</form>

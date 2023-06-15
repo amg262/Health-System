@@ -1,0 +1,87 @@
+@model IS_Proj_HIT.ViewModels.ViewOrderPageModel
+
+
+<partial name="PatientBannerPartial" model="Model.Patient" class="mw-100"/>
+<partial name="_EncounterMenu" model="Model.Encounter"/>
+
+    <div class="row justify-content-start" >
+        <div class="col mx-0 px-0"  >
+
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+
+                <h4>
+                        Order Information
+
+                        @if (User.IsInRole("Administrator") || User.IsInRole("Nursing Faculty") || User.IsInRole("HIT Faculty") || User.IsInRole("Registrar"))
+                        {
+                            
+                            <a asp-action="EditAdmitOrder" asp-route-oId="@Model.Order.AdmitOrderId" asp-route-id="@Model.Encounter.EncounterId" class="btn btn-info btn-sm float-right">
+
+                                Edit
+                            </a>
+                        }
+
+                    </h4>
+
+                </div>
+                
+                <div class="card-body bg-light">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-sm-12 col-lg-4 ml-0 pl-0">
+                                <label>Order Date: </label>
+                                <span class="font-weight-bold">@Model.Order.OrderDateTime</span>
+                            </div>
+                            <div class="col-sm-12 col-lg-4">
+                                <label>Visit Type: </label>
+                                <span class="font-weight-bold">@Model.Order.VisitType.Name</span>
+                            </div>
+                            <div class="col-sm-12 col-lg-4">
+                                <label>Department: </label>
+                                <span class="font-weight-bold">@Model.Order.Department.Name</span>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-sm-12 col-lg-4 ml-0 pl-0">
+                                <label>Ordering Physician: </label>
+                                <span class="font-weight-bold">
+                                    @Model.Order.OrderingPhysician.FirstName @Model.Order.OrderingPhysician.LastName
+                                </span>
+                            </div>
+                            <div class="col-sm-12 col-lg-4">
+                                <label>Co-Author: </label>
+                                <span class="font-weight-bold">@(Model.Order.CoOrderingPhysician != null ? Model.Order.CoOrderingPhysician.FirstName+" "+Model.Order.CoOrderingPhysician.LastName : "No Co-Author")</span>
+                            </div>
+                            <div class="col-sm-12 col-lg-4">
+                                <label>Last Modified: </label>
+                                <span class="font-weight-bold">@Model.Order.LastModified</span>
+                            </div>
+                        </div>
+                        <hr />
+                        @if(Model.Order.IsOrderComplete){ <div class="row">
+                            <div class="col-sm-12 col-lg-4 ml-0 pl-0">
+                                <label>Completed By: </label>
+                                <span class="font-weight-bold">@(Model.Order.OrderCompletedByPhysician != null ? Model.Order.OrderCompletedByPhysician.FirstName+" "+Model.Order.OrderCompletedByPhysician.LastName : "No Author")</span>
+                            </div>
+                            <div class="col-sm-12 col-lg-6">
+                                <label>Completed on: </label>
+                                <span class="font-weight-bold">@Model.Order.OrderCompletedDateTime</span>
+                            </div>
+                        </div>
+                        <hr />
+                        }
+                        <div class="row">
+                            <div class="col-sm-12 col-lg-12 ml-0 pl-0">
+                                <label>Notes: </label>
+                                <span class="font-weight-bold">@Model.Order.Notes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

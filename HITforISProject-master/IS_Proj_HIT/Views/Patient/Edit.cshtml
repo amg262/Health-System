@@ -1,0 +1,21 @@
+﻿@model IS_Proj_HIT.Entities.Patient
+
+<partial name="PatientBannerPartial" model="Model" />
+<div class="card">
+    <div class="card-header bg-primary text-white"><h4>Edit Patient</h4></div>
+    <div class="card-body bg-light">
+        <form method="post" id="patientEdit" name="patientEdit" asp-action="Edit">
+            <partial name="~/Views/Patient/PatientFormFields.cshtml" />
+            <hr/>
+            <button type="submit" class="btn btn-outline-primary" id="formatSsnAndSubmitForm">Save</button>
+        </form>
+    </div>
+</div>
+<hr />
+
+<a asp-controller="Patient"
+   asp-action="Details"
+   asp-route-id="@Model.Mrn" 
+   class="btn btn-outline-primary mrn">
+    <i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Back To Details
+</a>

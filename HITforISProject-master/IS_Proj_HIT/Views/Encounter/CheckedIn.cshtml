@@ -1,0 +1,91 @@
+﻿@model IEnumerable<IS_Proj_HIT.ViewModels.EncounterPatientViewModel>
+@{
+    ViewData["Title"] = "Encounter List";
+}
+
+<div class="row my-3">
+    <div class="col-12">
+        <h3>Checked In Patient Encounters</h3>
+    </div>
+</div>
+<h3 class="error">@ViewData["ErrorMessage"]</h3>
+
+<div class="row">
+    <div class="col-12">
+        <table class="table table-striped table-bordered">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th style="vertical-align: top; text-align: left;" scope="col">MRN</th>
+                    <th style="vertical-align: top; text-align: left;" scope="col">Patient Name</th>
+                    <th style="vertical-align: top; text-align: left;" scope="col">Admit Time</th>
+                    <th style="vertical-align: top; text-align: left;" scope="col">Facility</th>
+                    <th style="vertical-align: top; text-align: left;" scope="col">Room Number</th>
+                    <th style="vertical-align: top; text-align: left;" scope="col">View Encounter Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var counter = 0;
+                }
+                @foreach (var encounter in Model)
+                {
+                    <tr @(counter++)>
+                        <td>@encounter.Mrn</td>
+                        <td>
+                            @(string.IsNullOrWhiteSpace(encounter.FirstName)
+                                ? encounter.LastName
+                                : $"{encounter.FirstName.Substring(0, 1)}. {encounter.LastName}")
+                        </td>
+                        <td>@encounter.AdmitDateTime</td>
+                        <td>@encounter.FacilityName</td>
+                        <td>@encounter.RoomNumber</td>
+                        <td id="special">
+                            <a asp-action="ViewEncounter"
+                               asp-route-encounterId="@encounter.EncounterId"
+                               asp-route-allowCheckedInRedirect="true"
+                               class="btn btn-outline-primary">
+                                View
+                            </a>
+                           
+                                <!--@if (User.IsInRole("Administrator"))
+                                {
+                                    <a asp-action="DeleteEncounter"
+                                       asp-route-encounterId="@encounter.EncounterId"
+                                       onclick="if (!confirm('Are you sure you want to delete this encounter?')) return false;" class="btn btn-danger">
+                                       Delete
+                                    </a>
+                                }-->
+
+                                @if (User.IsInRole("Administrator"))
+                                {
+                                    <a asp-action="DischargeEncounter"
+                                       asp-route-encounterId="@encounter.EncounterId"
+                                       asp-route-allowCheckedInRedirect="true"
+                                       class="btn btn-danger">
+                                        Discharge
+                                    </a>
+                                }
+                            
+                        </td>
+                    </tr>
+                }
+                @if (counter == 0) {
+                    <tr class="red">
+                        <td>No patients found</td>
+                    </tr>
+                }
+                <!--
+                <td>@ViewBag.UserFacil</td>
+                <td>@ViewBag.SecCheck</td>
+                -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<hr />
+<a asp-controller="Patient"
+   asp-action="PatientSearch"
+   class="btn btn-outline-primary">
+    <i class="fas fa-search"></i> Search for a patient
+</a>

@@ -1,0 +1,148 @@
+﻿@*@model IList<IdentityUser>*@
+@model List<UsersPlusViewModel>
+@{
+    ViewData["Title"] = "ListUsers";
+
+}
+
+<div class="row my-3">
+<h3>
+    <a class="btn btn-primary" asp-action="Index">
+        <i class="fa fa-arrow-left "></i>
+    </a>
+    List User
+</h3>
+</div>
+
+@* We've had various problems with List Users, so we'd recommend to just become acquainted with it before you begin to tinker with it. *@
+
+@*<div class="card-body">*@
+@using (Html.BeginForm("DeleteBatch", "Administration", FormMethod.Post))
+{<div class="card">
+
+        <table class="table table-striped" id="table_id">
+            <thead>
+                <tr>
+                    @if (User.IsInRole("Administrator")) {
+                    <th>
+                        First Name
+                    </th>
+                    <th>
+                        Last Name
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    @*<th>
+                        Start Date
+                    </th>*@
+                    <th data-orderable="false">
+
+                    </th>
+                    <th data-orderable="false" style="padding: 8px 10px">
+
+                        <input type="checkbox" class="checkBox" name="userIdsToDelete" id="checkAll" value="@Model."  style="width: 30px; height: 30px; text-align:center; vertical-align:middle; padding: 8px 10px"/> Select All
+                        <div class="float-right">
+                            <button type="submit" value="Delete" class="btn btn-outline-danger float-right" onclick="return confirm('Are you sure?')"><i class="fa fa-trash-o"></i> Delete Selected</button>
+                        </div>
+                    </th>
+                    }
+                    else {
+                    <th>
+                        First Name
+                    </th>
+                    <th>
+                        Last Name
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    @*<th>
+                        Start Date
+                    </th>*@
+                    <th data-orderable="false">
+
+                    </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count(); i++)
+                {
+                    @if (User.IsInRole("Administrator")) {
+                    <tr id="userRoleTableRow">
+
+                        @*for DATA tables to work with sort/pagination/etc. there needs to be matching <td> in thead/tbody*@
+
+                        <td>@Model[i].FirstName</td>
+                        <td>@Model[i].LastName</td>
+                        <td>@Model[i].UserName</td>
+                        @*<td>@Model[i].StartDate.ToString("d")</td>*@
+                        <td>
+                            <a asp-action="EditUserDetails" asp-route-id="@Model[i].UserId">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@Model[i].UserId">Details</a>
+                        </td>
+                        <td>
+                            <input asp-for="@Model[i].IsSelected" type="checkbox" class="checkBox" id="userIdsToDelete" style="width: 30px; height: 30px; text-align:center; vertical-align:middle;" />
+                        </td>
+                    </tr>
+                    }
+                    else {
+                        <tr id="userRoleTableRow">
+                            <td>@Model[i].FirstName</td>
+                            <td>@Model[i].LastName</td>
+                            <td>@Model[i].UserName</td>
+                            @*<td>@Model[i].StartDate.ToString("d")</td>*@
+                            <td>
+                                <a asp-action="Details" asp-route-id="@Model[i].UserId">Details</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        
+
+        </table>
+    </div>
+}
+
+
+<link href="//cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css" rel="stylesheet" />
+
+
+@section scripts{
+
+    <script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#table_id').DataTable();
+            $("#checkAll").click(function () {
+                $(".checkBox").prop('checked',
+                    $(this).prop('checked'));
+            });
+            $("#delete").click(function () {
+                var selectedIDs = new Array();
+                $('input:checkbox.checkBox').each(function () {
+                    if ($(this).prop('checked')) {
+                        selectedIDs.push($(this).val());
+                    }
+                });
+                var options = {};
+                options.url = "/administration/deletebatch";
+                options.type = "POST";
+                options.data = JSON.stringify(selectedIDs);
+                options.contentType = "application/json";
+                options.dataType = "json";
+                options.success = function (msg) {
+                    alert(msg);
+                };
+                console.log(options)
+                options.error = function () {
+                    alert("Error while deleting the records!");
+                    console.log(this.error)
+                };
+                $.ajax(options);
+            });
+        });
+    </script>
+}

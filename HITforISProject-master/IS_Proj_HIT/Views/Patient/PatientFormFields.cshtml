@@ -1,0 +1,124 @@
+﻿@model IS_Proj_HIT.Entities.Patient
+
+
+<div class="container" asp-validation-summary="All"></div>
+<div class="col-sm-4" hidden>
+    <label>MRN</label><br />
+    <input asp-for="@Model.Mrn" name="Mrn" class="mrn" />
+</div>
+<div class="row">
+    <div class="col-sm-4">
+        <label>*First Name</label><br />
+        <input class="form-control" asp-for="@Model.FirstName" name="FirstName" id="FirstName" placeholder="First Name" />
+
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Middle Initial</label><br />
+        <input class="form-control" asp-for="@Model.MiddleName" name="MiddleName" id="MiddleName" placeholder="Middle Initial" maxlength="1" />
+
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>*Last Name</label><br />
+        <input class="form-control" asp-for="@Model.LastName" name="lastName" id="LastName" placeholder="Last Name" />
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4 form-group">
+        <label>Alias First Name</label>
+        <input class="form-control" asp-for="@Model.AliasFirstName" name="aliasFirstName" placeholder="Alias First Name" />
+
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Alias Middle Initial</label>
+        <input class="form-control" asp-for="@Model.AliasMiddleName" name="aliasMiddleName" placeholder="Alias Middle Initial" maxlength="1" />
+
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Alias Last Name</label>
+        <input class="form-control" asp-for="@Model.AliasLastName" name="aliasLastName" placeholder="Alias Last Name" />
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4 form-group">
+        <label>Maiden Name</label>
+        <input class="form-control" asp-for="@Model.MaidenName" name="MaidenName" placeholder="Maiden Name" />
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Mother's Maiden Name</label>
+        <input class="form-control" asp-for="@Model.MothersMaidenName" name="MothersMaidenName" placeholder="Mother's Maiden Name" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4 form-group">
+        <label>Primary Language</label>
+        <select class="form-control dropdowns" id="language" name="language" asp-items="ViewBag.Languages"><option value="">Select Primary Language</option></select>
+
+    </div>
+
+    <div class="col-sm-4 form-group checkboxcontainer" style="margin-top: 30px;">
+        <label for="interp">
+            Interpreter Needed?
+            <input id="interp" asp-for="@Model.InterpreterNeeded" />
+            <span class="box"></span>
+        </label>
+    </div>
+</div>
+<div class="row checkboxcontainer">
+    <div class="col-sm-4 form-group">
+        <label>SSN</label><br />
+        <input asp-for="@Model.Ssn" name="Ssn" id="Ssn" class="form-control" maxlength="11" placeholder="SSN" />
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>DOB</label><br />
+        <input type="date" asp-for="@Model.Dob" name="Dob" class="form-control dob" placeholder="Date of Birth*" />
+    </div>
+    <div class="col-sm-4 form-group" style="margin-top: 30px;">
+        <label for="deceased">Deceased?
+                <span class="box"></span>
+                <input id="deceased" asp-for="@Model.DeceasedLiving" />
+        </label>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4 form-group">
+        <label>Marital Status</label>
+        <select class="form-control dropdowns" asp-for="@Model.MaritalStatusId" asp-items="ViewBag.MaritalStatus"><option value="">Select Marital Status</option></select>
+        <span asp-validation-for="MaritalStatusId" class="text-danger"></span>
+
+    </div>
+    <div class="col-sm-4">
+        <label>Ethnicity ID</label>
+        <select class="form-control dropdowns" asp-for="@Model.EthnicityId" asp-items="ViewBag.Ethnicity"><option value="">Select Ethnicity</option></select>
+        <span asp-validation-for="EthnicityId" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4">
+        <label>Race</label>
+        <select class="form-control dropdowns" id="race" name="race" asp-items="ViewBag.Races"><option value="">Select Race</option></select>
+    </div>
+  
+</div>
+<div class="row">
+    <div class="col-sm-4 form-group">
+        <label>Religion</label>
+        <select class="form-control dropdowns" asp-for="@Model.ReligionId" asp-items="ViewBag.Religions"><option value="">Select Religion</option></select>
+        <span asp-validation-for="ReligionId" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>*Sex</label>
+        <select class="form-control dropdowns" asp-for="@Model.SexId" asp-items="ViewBag.Sexes"><option value="">Select Sex</option></select>
+        <span asp-validation-for="SexId" class="text-danger"></span>
+    </div>
+    <div class="col-sm-4 form-group">
+        <label>Gender</label>
+        <select class="form-control dropdowns" asp-for="@Model.GenderId" asp-items="ViewBag.Gender"><option value="">Select Gender</option></select>
+        <span asp-validation-for="GenderId" class="text-danger"></span>
+    </div>
+</div>
+
+@*Employment drop down was here*@
+
+<br />
+<input asp-for="@Model.LastModified" type="text" hidden readonly value="@(ViewBag.LastModified ?? String.Empty)" />

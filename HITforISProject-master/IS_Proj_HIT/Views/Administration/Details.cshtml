@@ -1,0 +1,29 @@
+@model IS_Proj_HIT.ViewModels.DetailsViewModel
+@{
+    ViewData["Title"] = "Details";
+}
+<h1>
+<a asp-action="ListUsers" class="btn btn-primary">
+        <i class="fa fa-arrow-left "></i>
+    </a>
+User Information
+</h1>
+<div>
+
+    <div><h4>User ID: @Model.UserId</h4></div>
+    <div><h4>First Name: @Model.FirstName</h4></div>
+    <div><h4>Last Name: @Model.LastName</h4></div>
+    <div><h4>Email: @Model.Email</h4></div>
+    <div><h4>Program: @Model.ProgramName</h4></div>
+    <div><h4>Role: @Model.RoleName</h4></div>
+
+</div>
+<br />
+<div class="justify-content-center float-left">
+    @* <a asp-action="EditUserDetails" asp-controller="Administration" asp-route-id="@Model.UserId" class="btn btn-outline-primary">Edit</a> *@
+    @*@if (User.IsInRole("Administrator")) {
+    <a asp-action="DeleteUser" asp-route-id="@Model.UserId"
+                                   onclick="return confirm('Are you sure you want to delete user : @Model.Email ?')" class="btn btn-outline-danger">Delete</a>
+    }*@
+    <a asp-action="ResetUserPassword" asp-route-id="@Model.UserId" class="btn btn-outline-primary">Reset Password</a>
+</div>

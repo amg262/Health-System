@@ -1,0 +1,29 @@
+﻿@model IS_Proj_HIT.Entities.UserTable
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="row my-3">
+    <div class="col-12">
+        <h3>Edit Profile</h3>
+    </div>
+</div>
+
+<form method="post" asp-action="EditRegisterDetails" name="editRegisterDetails">
+    <div class="container text-danger" asp-validation-summary="All"></div>
+    <input type="hidden" asp-for="@Model.UserId" />
+    <div class="row">
+        <div class="col-sm-4">
+            <label for="FirstName">First Name: </label><br />
+            <input class="form-control" asp-for="@Model.FirstName" name="FirstName" id="FirstName" placeholder="First Name" />
+        </div>
+        <div class="col-sm-4">
+            <label for="LastName">Last Name: </label><br />
+            <input class="form-control" asp-for="@Model.LastName" name="LastName" id="LastName" placeholder="Last Name" />
+        </div>
+    </div>
+    <br />
+    <button id="update-profile-button" type="submit" class="btn btn-primary">Update Info</button>
+    <button asp-action="ResetSecurityQuestions" asp-route-id="@Model.UserId" class="btn btn-primary">Add or Reset Questions</button>
+    <button asp-action="ResetUserPassword" asp-route-id="@Model.UserId" class="btn btn-primary">Reset Password</button>
+</form>

@@ -1,0 +1,74 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@model IEnumerable<IdentityRole>
+@{
+    ViewBag.Title = "All Roles";
+
+}
+<div class="row my-3">
+<h3>
+    <a class="btn btn-primary" asp-action="Index">
+        <i class="fa fa-arrow-left "></i>
+    </a>
+    Security Roles Management 
+</h3>
+</div>
+
+@if (Model.Any())
+{
+    <div class="container">
+        @if (User.IsInRole("Administrator")) {
+            <div class="row">
+                <h3 class="mb-3">
+                    <a class="btn btn-outline-primary" style="width: auto"
+                    asp-controller="administration" asp-action="CreateRole">Create Role</a>
+                </h3>
+            </div>
+        }
+        <div class="row">
+            @foreach (var role in Model)
+            {
+                @if (User.IsInRole("HIT Faculty") || User.IsInRole("Nursing Faculty"))
+                {
+                    @if (role.Name != "Administrator" && role.Name != "Nursing Faculty" && role.Name != "HIT Faculty" )
+                    {
+                        <div class="col-sm-3 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">@role.Name</h5>
+                                </div>
+                                <div class="card-footer">
+                                    <a class="btn btn-outline-primary" asp-action="EditRole" asp-route-id="@role.Id">Edit Role</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-sm-3 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">@role.Name</h5>
+                            </div>
+                            <div class="card-footer">
+                                <a class="btn btn-outline-primary" asp-action="EditRole" asp-route-id="@role.Id">Edit Role</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            No roles created yet.
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Use the button below to create a role.</h5>
+            <a class="btn btn-primary" style="width: auto" asp-action="CreateRole">Create Role</a>
+        </div>
+    </div>
+}

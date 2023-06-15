@@ -1,0 +1,49 @@
+﻿@model IS_Proj_HIT.Entities.Encounter
+
+<partial name="PatientBannerPartial" model="ViewBag.Patient" />
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4>
+            Edit Encounter
+            <a asp-action="ViewEncounter"
+               asp-route-encounterId="@Model.EncounterId"
+               class="btn btn-info btn-sm float-right">
+                Return to Encounter View
+            </a>
+        </h4>
+    </div>
+    <div class="card-body bg-light">
+        <form asp-action="EditEncounter" id="editEncounter" method="post" name="editEncounter">
+            <div asp-validation-summary="All" class="container"></div>
+            <input asp-for="@Model.EncounterId" name="EncounterId" type="hidden" value="@Model.EncounterId" />
+            <input asp-for="AdmitDateTime" name="AdmitDateTime" type="hidden" value="@Model.AdmitDateTime" />
+            
+            <partial name="EncounterFormFields" model="@Model" />
+            <hr/>
+            <div class="row">
+                <div class="col-sm-12 col-lg-4">
+                    <label>Discharge Date Time (XX/XX/XXXX 00:00:00)</label>
+                    <input type="datetime-local" asp-for="@Model.DischargeDateTime" name="DischargeDateTime" class="form-control" placeholder="XX/XX/XXXX 00:00:00"/>
+                    <span asp-validation-for="DischargeDateTime" class="text-danger"></span>
+                </div>
+                <div class="col-sm-12 col-lg-8">
+                    <label>Discharge Disposition</label>
+                    <select class="form-control dropdowns" asp-for="@Model.DischargeDisposition" asp-items="ViewBag.Discharges" name="DischargeDisposition">
+                        <option value="">Select Discharge Disposition</option>
+                    </select>
+                    <span asp-validation-for="DischargeDisposition" class="text-danger"></span>
+                </div>
+            </div>
+            <br /><div class="row">
+                 <div class="col-sm-12 col-lg-12">
+                    <label>Discharge Notes</label>
+                    <input type="text" asp-for="@Model.DischargeComment" name="DischargeComment" class="form-control" placeholder="Discharge Notes">
+                    <span asp-validation-for="DischargeComment" class="text-danger"></span>
+                </div>
+            </div>
+            <hr />
+
+            <button class="btn-primary" type="submit">Save</button>
+        </form>
+    </div>
+</div>

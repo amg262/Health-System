@@ -1,0 +1,14 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+
+namespace IS_Proj_HIT.Areas.Identity.Pages.Account
+{
+    [AllowAnonymous]
+    public class LockoutModel : PageModel
+    {
+        public void OnGet()
+        {
+
+        }
+    }
+}

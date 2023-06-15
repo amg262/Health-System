@@ -1,0 +1,173 @@
+@model IS_Proj_HIT.Entities.ListOrdersViewModel
+@{
+    ViewData["Title"] = "Encounter Orders";
+}
+@ViewBag.Message
+
+<partial name="PatientBannerPartial" model="ViewBag.Patient" />
+<partial name="_EncounterMenu" model="ViewBag.Encounter"/>
+
+
+@{
+    //arrows to indicate what is being sorted and how
+    var classVisitType = "fa fa-angle-right";
+    var classOrderDate = "fa fa-angle-down";
+    var classCompletedDate = "fa fa-angle-right";
+    var classCompleted = "fa fa-angle-right";
+
+    if (TempData["msg"].Equals("Sort order is by Visit Type Ascending"))
+    {
+        classVisitType = "fa fa-angle-down";
+        classOrderDate = "fa fa-angle-right";
+        classCompletedDate = "fa fa-angle-right";
+        classCompleted = "fa fa-angle-right";
+    }
+    else if (TempData["msg"].Equals("Sort order is by Order Type Descending"))
+    {
+        classVisitType = "fa fa-angle-up";
+        classOrderDate = "fa fa-angle-right";
+        classCompletedDate = "fa fa-angle-right";
+        classCompleted = "fa fa-angle-right";
+    }
+    else if (TempData["msg"].Equals("Sort order is by Order Date Ascending"))
+    {
+        classVisitType = "fa fa-angle-right";
+        classOrderDate = "fa fa-angle-up";
+        classCompletedDate = "fa fa-angle-right";
+        classCompleted = "fa fa-angle-right";
+    }
+    else if (TempData["msg"].Equals("Sort order is by Order Date Descending"))
+    {
+        classVisitType = "fa fa-angle-right";
+        classOrderDate = "fa fa-angle-down";
+        classCompletedDate = "fa fa-angle-right";
+        classCompleted = "fa fa-angle-right";
+    }
+    else if (TempData["msg"].Equals("Sort order is by Completed Date Ascending"))
+    {
+        classVisitType = "fa fa-angle-right";
+        classOrderDate = "fa fa-angle-right";
+        classCompletedDate = "fa fa-angle-up";
+        classCompleted = "fa fa-angle-right";
+    }
+    else if (TempData["msg"].Equals("Sort order is by Completed Date Descending"))
+    {
+        classVisitType = "fa fa-angle-right";
+        classOrderDate = "fa fa-angle-right";
+        classCompletedDate = "fa fa-angle-down";
+        classCompleted = "fa fa-angle-right";
+    }
+    else if (TempData["msg"].Equals("Sort order is by Completed Ascending"))
+    {
+        classVisitType = "fa fa-angle-right";
+        classOrderDate = "fa fa-angle-right";
+        classCompletedDate = "fa fa-angle-right";
+        classCompleted = "fa fa-angle-down";
+    }
+    else if (TempData["msg"].Equals("Sort order is by Completed Descending"))
+    {
+        classVisitType = "fa fa-angle-right";
+        classOrderDate = "fa fa-angle-right";
+        classCompletedDate = "fa fa-angle-right";
+        classCompleted = "fa fa-angle-up";
+    }
+}
+@if (Model.Orders.Count() == 0)
+{
+    <div class="red">
+        <p>No Orders have been created for this patient yet.</p>
+    </div>
+}
+else
+{
+    @*The below msg is used to decide which icon to display when sorting.*@
+    <div id="sortBy" hidden class="red">@Html.Raw(TempData["msg"])</div>
+}
+
+    
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4>
+            Orders
+         @if (User.IsInRole("Administrator") || User.IsInRole("Nursing Faculty") || User.IsInRole("HIT Faculty") || User.IsInRole("Physician") || User.IsInRole("Registrar")){
+             <a class="btn btn-info btn-sm float-right" asp-action="CreateOrder" asp-route-encounterId="@ViewBag.EncounterId" asp-route-Mrn="@ViewBag.Mrn" asp-route-returnUrl="@ViewBag.ReturnUrl">Add New Order</a>
+         }
+        </h4>
+    </div>
+    <div class="card-body bg-white">
+        <div class="container">
+            <table class="table table-striped table-bordered">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th scope="col"><i class="@classVisitType" aria-hidden="true"></i> @Html.ActionLink("Visit Type", "ListOrders", new { sortOrder = ViewBag.VisitTypeSortParm }, new {@style="color:#FFFFFF" })</th>
+
+                        <th scope="col"><i class="@classCompleted" aria-hidden="true"></i> @Html.ActionLink("Completed", "ListOrders", new { sortOrder = ViewBag.CompletedSortParm }, new {@style="color:#FFFFFF" })</th>
+                        <th scope="col"><i class="@classOrderDate" aria-hidden="true"></i> @Html.ActionLink("Order Date", "ListOrders", new { sortOrder = ViewBag.OrderDateSortParm }, new {@style="color:#FFFFFF" })</th><th scope="col"><i class="@classCompletedDate" aria-hidden="true"></i> @Html.ActionLink("Completed Date", "ListOrders", new { sortOrder = ViewBag.CompletedDateSortParm }, new {@style="color:#FFFFFF" })</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model.Orders)
+                    {
+                    <tr>
+                        <td>@order.VisitType.Name </td>
+                        <td id="signIn"><i class="@(order.IsOrderComplete==true ? "fas fa-check text-success" : "fas fa-flag theFlag text-danger")"></i></td>
+                        <td class="hideStart">@order.OrderDateTime</td>
+                        <td class="hideStart">@(order.OrderCompletedDateTime.HasValue ? order.OrderCompletedDateTime : "Active" )</td>
+                        <td>
+
+                        @if (User.IsInRole("Administrator") || User.IsInRole("Nursing Faculty") || User.IsInRole("HIT Faculty") || User.IsInRole("Nursing Student")
+                        || User.IsInRole("HIT Clerk") || User.IsInRole("Physician") || User.IsInRole("Registrar"))
+                        {
+                            @* //TODO: Make these action buttons function *@
+                                <a asp-action="ViewOrder" asp-route-orderId="@order.AdmitOrderId" asp-route-encounterId="@order.EncounterId" class="btn btn-outline-primary">Details</a>
+                        }
+                        
+                        @if (User.IsInRole("Administrator"))
+                        {
+                            
+                                <a onclick="return confirm('Are you sure you want to delete this order?')" asp-action="DeleteOrder" asp-route-id="@order.AdmitOrderId" asp-route-encounterId="@order.EncounterId" class="btn btn-danger">Delete</a>
+                            
+                        }
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script> 
+<script>
+
+    // Calc age in div in Patient Banner
+    $(function () {
+        var dob = $('.dob').html();
+        var dob1 = $('.dob').val();
+        if (dob != '') {
+            var DateCreated = new Date(Date.parse(dob));
+            var today = new Date();
+
+            var dayDiff = Math.ceil(today - DateCreated) / (1000 * 60 * 60 * 24 * 365);
+            var age = parseInt(dayDiff);
+            $('.age').text(age);
+
+        }
+
+        if (dob1 != '') {
+            var DateCreated = new Date(Date.parse(dob1));
+            var today = new Date();
+
+            var dayDiff = Math.ceil(today - DateCreated) / (1000 * 60 * 60 * 24 * 365);
+            var age = parseInt(dayDiff);
+
+            $('.age').text(age);
+
+        }
+    });
+
+</script>

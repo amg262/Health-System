@@ -1,0 +1,51 @@
+﻿@page
+@model IS_Proj_HIT.IndexModelNoteType
+
+@{
+    ViewData["Title"] = "Note Type Data Entry";
+}
+
+<div class="row my-3">
+<h3>
+    <a class="btn btn-primary" asp-controller="Administration" asp-action="PFormsDataEntry">
+        <i class="fa fa-arrow-left "></i>
+    </a>
+    Note Type
+</h3>
+</div>
+
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NoteType[0].NoteType1)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NoteType[0].LastModified)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.NoteType)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NoteType1)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastModified)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.NoteTypeId">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.NoteTypeId">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.NoteTypeId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,186 @@
+@model IS_Proj_HIT.ViewModels.ViewEncounterPageModel
+
+@{
+    ViewData["Title"] = "Physician Notes";
+}
+<partial name="PatientBannerPartial" model="ViewBag.Patient" />
+<partial name="_EncounterMenu" model="Model.Encounter"/>
+
+@* ---- Progress notes done, might need small changes as the next group sees fit. *@
+@{
+    var classNoteType = "fa fa-angle-right margin 1em";
+    var classDate = "fa fa-angle-down";
+    var classPhysician = "fa fa-angle-right";
+    var classCoPhysician = "fa fa-angle-right";
+
+
+    if (TempData["msg"].Equals("Sort order is by Note Type Ascending"))
+    {
+        classNoteType = "fa fa-angle-down";
+        classDate = "fa fa-angle-right";
+        classPhysician = "fa fa-angle-right";
+        classCoPhysician = "fa fa-angle-right";
+        
+    }
+    else if (TempData["msg"].Equals("Sort order is by Note Type Descending"))
+    {
+        classNoteType = "fa fa-angle-up";
+        classDate = "fa fa-angle-right";
+        classPhysician = "fa fa-angle-right";
+        classCoPhysician = "fa fa-angle-right";
+    }
+    if (TempData["msg"].Equals("Sort order is by Date Ascending"))
+    {
+        classNoteType = "fa fa-angle-right";
+        classDate = "fa fa-angle-up";
+        classPhysician = "fa fa-angle-right";
+        classCoPhysician = "fa fa-angle-right";
+    }
+    else if (TempData["msg"].Equals("Sort order is by Date Descending"))
+    {
+        classNoteType = "fa fa-angle-right";
+        classDate = "fa fa-angle-down";
+        classPhysician = "fa fa-angle-right";
+        classCoPhysician = "fa fa-angle-right";
+    }
+    if (TempData["msg"].Equals("Sort order is by Physician Ascending"))
+    {
+        classNoteType = "fa fa-angle-right";
+        classDate = "fa fa-angle-right";
+        classPhysician = "fa fa-angle-up";
+        classCoPhysician = "fa fa-angle-right";
+    }
+    else if (TempData["msg"].Equals("Sort order is by Physician Descending"))
+    {
+        classNoteType = "fa fa-angle-right";
+        classDate = "fa fa-angle-right";
+        classPhysician = "fa fa-angle-down";
+        classCoPhysician = "fa fa-angle-right";
+    }
+    if (TempData["msg"].Equals("Sort order is by CoPhysician Ascending"))
+    {
+        classNoteType = "fa fa-angle-right";
+        classDate = "fa fa-angle-right";
+        classPhysician = "fa fa-angle-right";
+        classCoPhysician = "fa fa-angle-up";
+    }
+    else if (TempData["msg"].Equals("Sort order is by CoPhysician Descending"))
+    {
+        classNoteType = "fa fa-angle-right ";
+        classDate = "fa fa-angle-right";
+        classPhysician = "fa fa-angle-right";
+        classCoPhysician = "fa fa-angle-down";
+    }
+}
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4>
+            Physician Notes
+         @if (User.IsInRole("Administrator") || User.IsInRole("Nursing Faculty") || User.IsInRole("HIT Faculty") || User.IsInRole("Physician") || User.IsInRole("Registrar")){
+             <a class="btn btn-info btn-sm float-right" asp-controller="Encounter" asp-action="AddProgressNotes" asp-route-id="@Model.Encounter.EncounterId">
+                    Add New
+             </a>
+         }
+        </h4>
+    </div>
+    <div class="card-body bg-white">
+        <div class="container">
+            <table class="table table-striped table-bordered">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th scope="col" ><i class="@classDate" aria-hidden="true"></i>@Html.ActionLink("   Date/Time", "ProgressNotes", new {sortOrder = ViewBag.DateSortParm}, new {@style="color:#FFFFFF" })</th>
+                        <th scope="col"><i class="@classNoteType" aria-hidden="true"></i>@Html.ActionLink("   Note Type", "ProgressNotes", new {sortOrder = ViewBag.NoteTypeSortParm}, new {@style="color:#FFFFFF" })</th>
+                        <th scope="col"><i class="@classPhysician" aria-hidden="true"></i>@Html.ActionLink("   Physician", "ProgressNotes", new {sortOrder = ViewBag.PhysicianSortParm}, new {@style="color:#FFFFFF" })</th>
+                        <th scope="col"><i class="@classCoPhysician" aria-hidden="true"></i>@Html.ActionLink("   Co-Physician", "ProgressNotes", new {sortOrder = ViewBag.CoPhysicianSortParm}, new {@style="color:#FFFFFF" })</th>
+                        <th scope="col">Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    @{
+                        var counter = 0;
+                    }
+                    @foreach (var prog in Model.ProgressNotes)
+                    {
+                        <tr @(counter++)>
+                            <td>@prog.LastUpdated</td>
+                            <td>@prog.NoteType.NoteType1</td>
+                            <td>@prog.Physician.LastName</td>
+                            <td>@prog.CoPhysician.LastName</td>
+                            <td>
+                                 @if (User.IsInRole("Administrator") || User.IsInRole("Nursing Faculty") || User.IsInRole("HIT Faculty") || User.IsInRole("Nursing Student")
+                                || User.IsInRole("HIT Clerk") || User.IsInRole("Physician") || User.IsInRole("Registrar"))
+                                {
+                                    
+                                    <button id="modalButton" class="btn btn-sm btn-info details" data-toggle="modal" data-target="#myModal-@counter">Details</button>
+
+                                    <div class="modal fade" tabindex="-1" role="dialog" id="myModal-@counter">
+                                        <div class="modal-dialog modal-lg" id="@counter">
+                                            <div class="modal-content">
+                                                <div class="modal-header table-primary">
+                                                        <div class="col-md-4">
+                                                            <h5 class="modal-title">@prog.NoteType.NoteType1
+                                                            </h5>
+                                                        </div>
+                                                    <button type="button" class="close btn-danger" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    
+                                                        <h4 class="">@if (User.IsInRole("Administrator") || User.IsInRole("Physician"))
+                                                            {
+                                                                <a asp-action="EditProgressNote"
+
+                                                                   asp-route-id="@Model.Encounter.EncounterId"
+                                                                   asp-route-pId="@prog.ProgressNoteId"
+                                                                   class="btn btn-info btn-sm flex-right float-right">
+
+                                                                    Edit
+                                                                </a>
+                                                            }
+                                                        </h4>   
+                                                        <div class="">
+                                                            Physician: @prog.Physician.LastName 
+                                                            <br>
+                                                            <br>
+                                                            Date/Time: @prog.LastUpdated
+                                                            <hr> 
+                                                            @prog.Note
+                                                        </div>
+                                                        
+                                                
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                }
+                 @* <a class="btn btn-secondary" asp-controller="Encounter" asp-action="ViewProgressNote" asp-route-id="@Model.Encounter.EncounterId" asp-route-pId="@prog.ProgressNoteId" style="text-align:left"> Details-Page verison </a>  *@
+                                @if (User.IsInRole("Administrator"))
+                                {
+                                    <a onclick="return confirm('Are you sure you want to delete this order?')" class="btn btn-danger btn-sm"  asp-controller="Encounter" asp-action="DeleteProgressNote" asp-route-id="@Model.Encounter.EncounterId" asp-route-pId="@prog.ProgressNoteId" > Delete </a>
+                                }
+
+                            </td>
+                        </tr>
+                    }
+                    @if (counter == 0) {
+                        <tr class="red">
+                            <td>No progress notes available</td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+<script>

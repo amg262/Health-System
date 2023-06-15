@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "Administration";
+}
+
+<div class="row my-3">
+    <div class="col-12">
+        <h3>Administration Tools</h3>
+    </div>
+</div>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <a asp-action="ViewRoles" class="btn btn-outline-primary">
+                        <h5 class="card-title mb-0">Security Roles</h5>
+                    </a>
+                </div>
+                <div class="card-footer-short">
+                    <p class="mb-0">Management pages for security roles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <a asp-action="ListUsers" class="btn btn-outline-primary">
+                            <h5 class="card-title mb-0">List Users</h5>
+                        </a>
+                    </div>
+                    <div class="card-footer-short">
+                        <p class="mb-0">List All Users in the Database.</p>
+                    </div>
+                </div>
+            </div>
+        @if (User.IsInRole("Administrator"))
+        {
+            <div class="col-sm-3 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <a asp-action="DataEntry" class="btn btn-outline-primary">
+                            <h5 class="card-title mb-0">PCA Structured Data</h5>
+                        </a>
+                    </div>
+                    <div class="card-footer">
+                        <p class="mb-0">Management pages for PCA structured data/lookup tables</p>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (User.IsInRole("Administrator"))
+        {
+            <div class="col-sm-3 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <a asp-action="EncounterDataEntry" class="btn btn-outline-primary">
+                            <h5 class="card-title mb-0">Encounter Structured Data</h5>
+                        </a>
+                    </div>
+                    <div class="card-footer">
+                        <p class="mb-0">Management pages for Encounter structured data/lookup tables</p>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (User.IsInRole("Administrator"))
+        {
+            <div class="col-sm-3 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <a asp-action="PhysicianDataEntry" class="btn btn-outline-primary">
+                            <h5 class="card-title mb-0">Physician Structured Data</h5>
+                        </a>
+                    </div>
+                    <div class="card-footer">
+                        <p class="mb-0">Management pages for Physician structured data/lookup tables</p>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (User.IsInRole("Administrator"))
+        {
+            <div class="col-sm-3 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <a asp-action="PFormsDataEntry" class="btn btn-outline-primary">
+                            <h5 class="card-title mb-0">Physician Documents Structured Data</h5>
+                        </a>
+                    </div>
+                    <div class="card-footer">
+                        <p class="mb-0">Management pages for Physician Documents structured data/lookup tables</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

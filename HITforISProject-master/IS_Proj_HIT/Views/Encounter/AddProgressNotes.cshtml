@@ -1,0 +1,119 @@
+@model IS_Proj_HIT.ViewModels.ProgressNotesViewModel
+@* @model IS_Proj_HIT.Models.ProgressNote *@
+@{
+    ViewData["Title"] = "Add Progress Notes";
+}
+<partial model="ViewBag.Patient" name="PatientBannerPartial" />
+<partial name="_EncounterMenu" model="Model.Encounter"/>
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4>
+            Add Physician Notes
+        </h4>
+    </div>
+
+    @* ---Add progress notes for the most part is done except for provider sign off functionality, edit progress notes in the same state---- *@
+    <div class="card-body bg-light">
+        <div class="container" asp-validation-summary="All">
+            <form method="post" id="progressNote" name="progressNote" asp-action="AddProgressNotes">
+                <input type="hidden" asp-for="@Model.EncounterId" value="@ViewBag.EncounterId" />
+                <div id="message"></div>
+                <div class="row mb-3 form-group">
+                    <label for="noteType" class="col-sm-2 col-form-label" >Note Type: </label>
+                    <div class="col-sm-10">
+                        <select style="width:30% " id="noteType" asp-for="@Model.NoteTypeId"
+                            name="NoteTypeId" class="form-control form-select" asp-items="ViewBag.NoteTypes" required>
+                            <option value="0" selected>Select a Note Type</option>
+                        </select>
+                    </div>
+                </div>
+                <hr/>
+               <div class="row mb-3 form-group ">
+                    <label for="date" class="col-sm-2 col-form-label">Date: </label>
+                    <div class="col-sm-10">
+                        <input type="datetime" asp-for="@Model.WrittenDate" name="WrittenDate"
+                            class="form-control" placeholder="XX/XX/XXXX 00:00:00" style="width: 30%"
+                            value="@DateTime.Now" />
+                    </div>
+                </div>
+                <hr/>
+                <div class="row mb-3 form-group ">
+                    <label for="physicianId" class="col-sm-2 col-form-label">Authoring Provider: </label>
+                    <div class="col-sm-10 justify-content-center">
+                        <select style="width: 30%;" id="physician" class="form-control dropdowns selectable"
+                            asp-for="@Model.PhysicianId" asp-items="ViewBag.Providers" name="PhysicianId"
+                            required>
+                            <option value="0" selected>Select a Provider</option>
+                        </select>
+                    </div>
+                </div>
+                <hr/>
+                @* -------Code for provider version  This version could be useful for implementing only certain providers being able to sign off on notes. ------ *@
+                @* <div id="provider-dropdown" class="col-sm-10">
+                    <select asp-for="@Model.CoPhysicianId" style="width: 30%;" class="form-control dropdowns selectable" data-style="btn-secondary" title="Select a provider">
+                        @foreach (var provider in @Model.Providers)
+                        {
+                            <option value="@provider.PhysicianId" data-cosigner=@provider.ProviderType.CosignRequired>@provider.FirstName @provider.LastName @provider.PhysicianId</option>
+                        }
+                    </select> *@
+            <div class="row mb-3 form-group ">
+                    <label for="CoPhysicianId" class="col-sm-2 col-form-label">Co-Signature: </label>
+                    <div class="col-sm-10 justify-content-center">
+                        <select style="width: 30%" id="coPhysician" class="form-control dropdowns"
+                            asp-for="@Model.CoPhysicianId" asp-items="ViewBag.Providers"
+                            name="CoPhysicianId" required>
+                            <option value="0" selected>Select a Co-Provider</option>
+                        </select>
+                    </div>
+                </div>
+                <hr/>
+                <div class="form-group">
+                    <label style="">Progress Note:</label>
+                    <div class="col-sm-11">
+                    <textarea asp-for="@Model.Note" style="width: 100%;" rows="7" name="Note" id="Note"
+                        required></textarea>
+                    </div>
+                </div>
+            <hr />
+                <button type="button" class="btn btn-outline-primary" id="validate">Save</button>
+                <button type="submit" id="submit" hidden></button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+
+<script>
+
+
+
+$(function () {
+
+
+    $('#validate').on('click', function (){
+        var Physician = $('#physician').val();
+        var CoPhysician = $('#coPhysician').val();
+        var NoteType = $('#noteType').val();
+        
+        $('#message').text('');
+
+        if (NoteType == "0"){
+            $('#message').text("Please select a valid Note type");
+        } else if (Physician == "0"){
+            $('#message').text("Please select a valid Physician");
+        } else if (CoPhysician == "0"){
+            $('#message').text("Please select a valid Co-Physician");
+        } else if (Physician == CoPhysician){
+            $('#message').text("The Physician signing off cannot also be the Co-Physician");
+        }else{
+            $('#submit').click();
+        }
+    }) 
+});
+
+
+</script>

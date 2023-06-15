@@ -1,0 +1,275 @@
+@model IS_Proj_HIT.ViewModels.OrdersViewModel
+<link rel="stylesheet" href="~/css/site.css" />
+<link rel="stylesheet" href="~/css/chosen.min.css" />
+@{
+    ViewData["Title"] = "Add Admit Order";
+}
+<partial model="ViewBag.Patient" name="PatientBannerPartial" />
+<partial name="_EncounterMenu" model="ViewBag.Encounter"/>
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h4>
+            Add Admit Order
+        </h4>
+    </div>
+    <div class="card-body bg-light">
+        <div class="container" asp-validation-summary="All">
+            <form method="post" id="order" name="order" asp-action="CreateOrder" asp-route-returnUrl="@ViewBag.ReturnUrl">
+                <div id="message"></div>
+                <div class="row mb-3 form-group">
+                    <label for="visitType" class="col-sm-2 col-form-label" >Visit Type: </label>
+                    <div class="col-sm-10">
+                        <select style="width:30% " id="visitType" asp-for="@Model.VisitTypeId"
+                            name="VisitTypeId" class="form-control form-select" asp-items="ViewBag.VisitType" required>
+                            <option value="0" selected>Select a Visit Type</option>
+                        </select>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row mb-3 form-group">
+                    <label for="department" class="col-sm-2 col-form-label" >Department: </label>
+                    <div class="col-sm-10">
+                        <select style="width:30% " id="department" asp-for="@Model.DepartmentId"
+                            name="DepartmentId" class="form-control form-select" asp-items="ViewBag.Departments" required>
+                            <option value="0" selected>Select a Department</option>
+                        </select>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row mb-3 form-group">
+                    <label for="orderDateTime" class="col-sm-2 col-form-label" >Date to be completed by: </label>
+                    <div class="col-sm-10">
+                        <input style="width:30% " id="orderDateTime" type="datetime-local" asp-for="@Model.OrderDateTime" name="OrderDateTime" placeholder="XX/XX/XXXX 00:00:00" class="form-control form-select" />
+                    </div>
+                </div>
+                <hr/>
+                <div class="row mb-3 form-group">
+                    <label for="department" class="col-sm-2 col-form-label" >Department: </label>
+                    <div class="col-sm-10">
+                        <select style="width:30% " id="department" asp-for="@Model.DepartmentId"
+                            name="DepartmentId" class="form-control form-select" asp-items="ViewBag.Departments" required>
+                            <option value="0" selected>Select a Department</option>
+                        </select>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row mb-3 form-group ">
+                    <label for="physician" class="col-sm-2 col-form-label">Authoring Provider: </label>
+                    <div class="col-sm-10 justify-content-center">
+                        <select style="width: 30%;" id="physician" class="form-control dropdowns selectable"
+                            asp-for="@Model.OrderingPhysicianId" asp-items="ViewBag.Physicians" name="OrderingPhysicianId"
+                            required>
+                            <option value="0" selected>Select a Physician</option>
+                        </select>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row mb-3 form-group ">
+                    <label for="coAuthor" class="col-sm-2 col-form-label">Co-Signature: </label>
+                    <div class="col-sm-10">
+                        <select style="width: 30%" id="coAuthor" class="form-control dropdowns selectable"
+                            asp-for="@Model.CoOrderingPhysicianId" asp-items="ViewBag.Physicians"
+                            name="CoOrderingPhysicianId" required>
+                            <option value="0" selected>Select a Co-Physician</option>
+                        </select>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row mb-3 form-group ">
+                    <label for="isOrderComplete" class="col-sm-2 col-form-label">Is it completed: </label>
+                    <div class="col-sm-10">
+                        <select style="width: 30%" id="isOrderComplete" class="form-control form-select"
+                            asp-for="@Model.IsOrderComplete"
+                            name="IsOrderComplete" required>
+                            <option selected value="False">Not Complete</option>
+                            <option value="True">Complete</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" id="orderCompletedStuff">
+                    <hr/>
+                    <div class="row mb-3 form-group ">
+                        <label for="completionAuthor" class="col-sm-2 col-form-label">Completed Signature: </label>
+                        <div class="col-sm-10">
+                            <select style="width: 30%" id="completionAuthor" class="form-control dropdowns selectable"
+                                asp-for="@Model.OrderCompletedByPhysicianId" asp-items="ViewBag.Physicians"
+                                name="OrderCompletedByPhysicianId" required>
+                                <option value="0" selected>Select a Physician</option>
+                            </select>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div class="row mb-3 form-group">
+                        <label for="completedDate" class="col-sm-2 col-form-label" >Date completed: </label>
+                        <div class="col-sm-10">
+                            <input style="width:30% " id="completedDate" type="datetime-local" asp-for="@Model.OrderCompletedDateTime" name="OrderCompletedDateTime" placeholder="XX/XX/XXXX 00:00:00" class="form-control form-select" />
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-group">
+                    <label style="">Notes:</label>
+                    <div class="col-sm-11">
+                    <textarea asp-for="@Model.Notes" style="width: 100%;" rows="7" name="Notes" id="notes" cols="60" 
+                        required></textarea>
+                    </div>
+                </div>
+                <div class="form-group" hidden>
+                    <label>ENCOUNTERID</label>
+                    <input asp-for="@Model.EncounterId" value="@ViewBag.encounterId" name="EncounterId" id="encounterId" readonly data-toggle="popover" data-placement="top" title="This unique ID identifies the patient" maxlength="6" />
+                    <label>LASTMODIFIED</label>
+                    <input asp-for="@Model.LastModified" class="form-control LastModified" type="datetime-local" name="LastModified" id="LastModified" value="@(ViewBag.LastModified ?? String.Empty)" />
+                </div>
+                
+                
+                <button class="btn btn-primary" type="button" id="chk4nulls" asp-route-returnUrl="@ViewBag.ReturnUrl">Create Order</button>
+                <button class="btn btn-outline-primary" id="realSubmit" hidden type="submit" asp-route-returnUrl="@ViewBag.ReturnUrl"></button>
+                <a asp-action="ListOrders" asp-route-id="@ViewBag.encounterId" asp-route-returnUrl="@ViewBag.ReturnUrl" class="btn btn-outline-primary"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i> Return</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+<script>
+    // Order Type drop down list from Add Order in Patients area
+    $(function () {
+
+        $('#chk4nulls').on('click', function () {
+            var VisitTypeValue = $('#visitType').val();
+            var Phycisian = $('#physician').val();
+            var Department = $('#department').val();
+            var coAuthor = $('#coAuthor').val();
+            var orderDateTime = $("#orderDateTime").val();
+            var isOrderComplete = $('#isOrderComplete').val();
+            var completionAuthor = $('#completionAuthor').val();
+            var completedDate = $('#completedDate').val();
+            var notes = $("#notes").val();
+            $('#message').text('');
+
+            if (VisitTypeValue == '0') {
+                $('#message').text('Please select an Order Type');
+                //order('Please select an Order Type');
+            } else if (orderDateTime == "") {
+                $('#message').text('Please select an Date for the order');
+            } else if (Phycisian == "0") {
+                $('#message').text('Please select an Author');
+            } else if (Department == "") {
+                $('#message').text('Please select a Department');
+            } else if (coAuthor == Phycisian) {
+                $('#message').text('The Co-author can not be the same person as the author');
+            } else if ($('.orderDate').val() > $('.approvalDate').val()) {
+                $('#message').text('The date of approval can not be before the date of order');
+            } else if(typeof notes != "string"){
+                $('#message').text('The notes are not readable');
+            } else if(notes.length <= 0){
+                $('#message').text('Please add some notes about this order');
+            } else if (isOrderComplete == "True" && (completionAuthor == "0" || completedDate == "")) {
+                $('#message').text('Please select the Author who completed this Order and/or the date this was ordered');
+            }
+            else {
+                var date = new Date();
+                date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                document.getElementById('LastModified').value = date.toISOString().slice(0, 16);
+                $('#realSubmit').click();
+            }
+
+        });
+
+        $('.selectable').on('change', function () {
+
+            $('#message').text('');
+
+        });
+
+
+        // show age in patient banner
+        var dob = $('.dob').html();
+        var dob1 = $('.dob').val();
+        if (dob != '') {
+            var DateCreated = new Date(Date.parse(dob));
+            var today = new Date();
+            var dayDiff = Math.ceil(today - DateCreated) / (1000 * 60 * 60 * 24 * 365);
+            var age = parseInt(dayDiff);
+            $('.age').text(age);
+        }
+        if (dob1 != '') {
+            var DateCreated = new Date(Date.parse(dob1));
+            var today = new Date();
+            var dayDiff = Math.ceil(today - DateCreated) / (1000 * 60 * 60 * 24 * 365);
+            var age = parseInt(dayDiff);
+            $('.age').text(age);
+        }
+        // On page load...
+        $('#orderCompletedStuff').hide();
+        var date = new Date();
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        document.getElementById('orderDateTime').value = date.toISOString().slice(0, 16);
+        document.getElementById('LastModified').value = date.toISOString().slice(0, 16);
+        console.log($('#orderDateTime').val())
+        console.log($('#LastModified').val())
+        //made for testing inputs
+        $('#coAuthor').on('change', function () {
+            //console.log("Value is: " + $("#coAuthor option:selected").text());
+            //console.log("Value is: " + $("#coAuthor").val());
+        });
+        $('#isOrderComplete').on('change', function () {
+            //console.log("Value is: " + $("#isOrderComplete option:selected").text());
+            //console.log("Value is: " + $("#isOrderComplete option:selected").val());
+            if ($("#isOrderComplete").val()=="True") {
+                //Will need to clear out values
+                $('#completionAuthor').val('0');
+                $('#completedDate').val('');
+                $('#orderCompletedStuff').show();
+            } else {
+                $('#completionAuthor').val('0');
+                $('#completedDate').val("0");
+                $("#orderCompletedStuff").hide();
+            }
+        });
+        $('.chosen').chosen({ width: '30%' });
+        //var d = new Date();
+        //var fullDate = d.getDate();
+        //console.log("Date is " + fullDate);
+        //$('.startDate').val(fullDate);
+        // Set the start date to the current date
+        /*
+        var currentTime = new Date();
+        var month = currentTime.getMonth() + 1;
+        var date = currentTime.getDate();
+        if (currentTime.getDate()) {
+            date = ("0" + currentTime.getDate()).slice(-2);
+        }
+        var year = currentTime.getFullYear();
+        console.log("Start date = " + year + '-' + month + '-' + date);*/
+        //$( ".startDate" ).val({ defaultDate: new Date() })
+
+
+        //$("form[name='order']").validate({
+        //    // Specify validation rules
+        //    rules: {
+        //        ordery: "required",
+        //        FallRiskId: "required"
+        //        //comments: "required"
+
+        //    },
+        //    // Specify validation error messages
+        //    messages: {
+        //        ordery: "Please select an item!",
+        //        FallRiskId: "Please select an item"
+        //        //comments: "Enter a comment, please"
+
+        //    },
+        //    // Make sure the form is submitted to the destination defined
+        //    // in the "action" attribute of the form when valid
+        //    submitHandler: function (form) {
+        //        form.submit();
+        //    }
+        //});
+    });
+
+
+</script>

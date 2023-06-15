@@ -1,0 +1,56 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@model IEnumerable<IS_Proj_HIT.Entities.Ethnicity>
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="red">@Html.Raw(TempData["msg1"])</div>
+<br />
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="card-group text-center p-2">
+        <div class="card bg-primary p-3">
+            <h2 class="m-b-0">
+                <a class="page-link" asp-controller="Patient" asp-action="PatientSearch">
+                    <i class="fas fa-search"></i>
+                    Patient Search
+                </a>
+            </h2>
+        </div>
+        <div class="card bg-primary p-3">
+            <h2 class="m-b-0">
+                <a class="page-link" asp-controller="Encounter" asp-action="CheckedIn">
+                    <i class="fas fa-users"></i>
+                    Checked in Patients
+                </a>
+            </h2>
+        </div>
+        <div class="card bg-primary p-3">
+            <h2 class="m-b-0">
+                <a class="page-link" asp-action="BritRedirect">
+                    <i class="fas fa-seedling"></i>
+                    BRIT Systems
+                </a>
+            </h2>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card-group text-center p-2 container text-white">
+        <div class="card bg-primary p-3 row">
+            <h2>Welcome</h2>
+            <hr />
+            <h3>
+                Please
+                <a class="linky" asp-area="Identity" asp-page="/Account/Login"
+                   asp-route-returnUrl="@Url.Action("Index", "Home")">Log In</a>
+                or
+                <a class="linky" asp-area="Identity" asp-page="/Account/Register"
+                   asp-route-returnUrl="@Url.Action("EditRegisterDetails", "Administration")">Create an Account</a>
+                to continue.
+            </h3>
+        </div>
+    </div>
+}

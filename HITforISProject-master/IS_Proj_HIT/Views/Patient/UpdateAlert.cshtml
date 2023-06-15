@@ -1,0 +1,224 @@
+﻿@model IS_Proj_HIT.Entities.PatientAlert
+<link rel="stylesheet" href="~/css/site.css" />
+<link rel="stylesheet" href="~/css/chosen.min.css" />
+@{
+    ViewData["Title"] = "Update Patient Alert";
+}
+
+@Html.Hidden("@ViewBag.returnUrl");
+
+<partial name="PatientBannerPartial" model="ViewBag.Patient" />
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <span class="heading">Alert ID: </span>@Model.PatientAlertId <span class="heading ml-5">Type: </span>@ViewBag.MyAlertType
+    </div>
+</div>
+<div class="card-body bg-light">
+
+     <p class="text-primary ml-4"><em>Editable Fields Marked with (<i class="fas fa-asterisk"></i>) </em></p>
+   
+    <div class="container">
+        <form method="post" id="updateAlert" name="updateAlert" asp-action="UpdateAlert" asp-route-returnUrl="@ViewBag.ReturnUrl">
+            <div class="row">
+                <div class="col-sm-4">
+                    <input type="hidden" asp-for="@Model.PatientAlertId" />
+                    <input type="hidden" asp-for="@Model.Mrn" />
+                    <input type="hidden" asp-for="@Model.AlertTypeId" />
+                    <label class="heading">Alert Type</label>
+                    <div id="alertType">@ViewBag.MyAlertType</div>
+                </div>
+                @*<div class="col-sm-4 form-group checkboxcontainer">*@
+                <div class="col-sm-4 form-group">
+                    <label for="isActive" class="heading">Active?</label><br />
+                    <input asp-for="@Model.IsActive" type="hidden" />
+                    <div>
+                        @((bool)@Model.IsActive ? "Yes" : "No")
+                    </div>
+
+                    @*<input id="isActive" asp-for="@Model.IsActive" type="checkbox" checked="@Model.IsActive" style="height: 20px; width: 20px;" />*@
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="heading">Created</label><br />
+                    <input asp-for="@Model.LastModified" class="takeawayborder bg-light" type="hidden" id="longer" />
+                    <div>@Model.LastModified.ToShortDateString()</div>
+                </div>
+                <div class="col-sm-4 form-group">
+                    <label class="heading">Start Date</label>
+                    <input asp-for="@Model.StartDate" type="hidden" />
+                    <div>@Model.StartDate.ToShortDateString()</div>
+                </div>
+                <div class="col-sm-4 form-group">
+                    <label class="heading">End Date * (must be today's date or before)</label><br />
+                    <input asp-for="@Model.EndDate" class="form-control endDate" type="date" name="EndDate" id="alertEndDate" max="@ViewBag.currentDate"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4 fallrisk">
+                    <label class="heading">Fall Risk</label><br />
+                    <div>@ViewBag.FallRisk</div>
+                </div>
+                <div class="col-sm-4 form-group allergy">
+                    <label class="heading">Allergy</label><br />
+                    <div>@ViewBag.AllergenValue</div>
+                </div>
+                <div class="col-sm-4 form-group allergy">
+                    <label class="heading">Reaction</label><br />
+                    <div>@ViewBag.ReactionValue</div>
+                </div>
+                <div class="col-sm-4 form-group restriction">
+                    <label class="heading">Restriction</label><br />
+                    <div>@ViewBag.RestrictionValue</div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label class="heading">Comments *</label><br />
+                    <textarea asp-for="@Model.Comments" name="comments" cols="60" rows="3"></textarea>
+                </div>
+            </div>
+            <button class="btn btn-outline-primary justify-content-center mt-3" id="submit" type="submit" asp-route-returnUrl="@ViewBag.ReturnUrl">Save Changes</button>
+            <a class="btn btn-outline-danger mt-3" href="javascript:history.back()">Cancel</a>
+        </form>
+    </div>
+</div>
+@*<div class="card-body bg-light">
+        <form method="post" id="updateAlert" name="updateAlert" asp-action="UpdateAlert" asp-route-returnUrl="@ViewBag.ReturnUrl">
+            <div class="row">
+                <div class="col-md-2">
+                    <label>Start Date</label><br />
+                    @Model.StartDate.ToShortDateString()
+                </div>
+                <div class="col-md-2">
+                    <label>End Date</label><br />
+                    <input asp-for="@Model.EndDate" class="form-control endDate" type="date" name="EndDate" id="longer" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label>Comments</label><br />
+                    <textarea asp-for="@Model.Comments" name="comments" cols="60" rows="3"></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-outline-primary justify-content-center" id="submit" type="submit" asp-route-returnUrl="@ViewBag.ReturnUrl">Save Changes</button>
+
+        </form>
+    </div>*@
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+<script>// Calc age in div in Patient Banner
+    $(document).ready(function () {
+        var date = new Date();
+        var currentDate = date.getDate();
+        var currentMonth = date.getMonth() + 1;
+        var currentYear = date.getFullYear();
+        var today = currentYear + "-" + currentMonth + "-" + currentDate;
+        document.getElementById["alertEndDate"].max = today;
+
+    })
+
+
+
+    //$.validator.addMethod("maxDate", function (value, element) {
+    //    var curDate = new Date();
+    //    var inputDate = new Date(value);
+    //    if (inputDate < curDate || inputDate == null)
+    //        return true;
+    //    return false;
+    //}, "cannot be a future date");
+
+    //$("form[name='updateAlert']").validate({
+
+    //    rules: {
+    //        EndDate: {
+    //            maxDate: true
+    //        }
+
+    //    },
+    //    messages: {
+    //        maxDate: "Cannot pick a future date"
+    //    },
+    //    submitHandler: function (form) {
+    //        form.submit();
+    //    }
+
+
+    //})
+
+    $(function () {
+
+        var dob = $('.dob').html();
+        var dob1 = $('.dob').val();
+        if (dob != '') {
+            var DateCreated = new Date(Date.parse(dob));
+            var today = new Date();
+
+            var dayDiff = Math.ceil(today - DateCreated) / (1000 * 60 * 60 * 24 * 365);
+            var age = parseInt(dayDiff);
+            $('.age').text(age);
+
+        }
+
+        if (dob1 != '') {
+            var DateCreated = new Date(Date.parse(dob1));
+            var today = new Date();
+
+            var dayDiff = Math.ceil(today - DateCreated) / (1000 * 60 * 60 * 24 * 365);
+            var age = parseInt(dayDiff);
+
+            $('.age').text(age);
+
+        }
+
+        /* Alert Types
+        2 Advanced Directive
+        3 Restricted Access
+        4 Allergy
+        5 Fall Risk
+        6 Clinical Reminder*/
+
+        var alertType = $('#alertType').text();
+        if (alertType == "Advanced Directive") {
+            $('.allergy').hide();
+            $('.fallrisk').hide();
+            $('.restriction').hide();
+        } else if (alertType == "Restricted Access") {
+            $('.allergy').hide();
+            $('.fallrisk').hide();
+            $('.restriction').show();
+        } else if (alertType == "Allergy") {
+            $('.allergy').show();
+            $('.fallrisk').hide();
+            $('.restriction').hide();
+        } else if (alertType == "Fall Risk") {
+            $('.allergy').hide();
+            $('.fallrisk').show();
+            $('.restriction').hide();
+        } else if (alertType == "Clinical Reminder") {
+            $('.allergy').hide();
+            $('.fallrisk').hide();
+            $('.restriction').hide();
+        }
+
+
+    });</script>
+
+
+
+
+
+
+
+
+
+
+
